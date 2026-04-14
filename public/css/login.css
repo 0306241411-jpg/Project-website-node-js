@@ -1,0 +1,40 @@
+/* nền riêng login */
+.login-body {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+}
+
+/* căn giữa form */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* form login */
+.login-form {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    border-radius: 15px;
+    padding: 35px;
+}
+
+/* input */
+.login-form input {
+    border-radius: 8px;
+    padding: 12px;
+}
+
+/* button */
+.login-form button {
+    width: 100%;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+/* sign up button */
+.login-form .btn + .btn {
+    margin-top: 10px;
+}
