@@ -1,0 +1,32 @@
+<div class="admin-form">
+    <h2>CẬP NHẬT NGƯỜI DÙNG </h2>
+    
+    <form id="updateUserForm" data-id="<%= users[0].id %>">
+        
+        <div class="form-group">
+            <label for="username">Tên đăng nhập (Username):</label>
+            <input type="text" id="username" name="username" value="<%=users[0].username%>" >
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Mật khẩu (Password):</label>
+            <input type="text" id="password" name="password" value="<%=users[0].password%>" >
+        </div>
+        
+        <div class="form-group">
+            <label>Hệ người dùng:</label>
+            <div class="checker-group">
+                <label class="checker-label">
+                    <input type="radio" name="role" value="1"<%= users[0].isAdmin === 1 ?'checked':'' %>>    
+                    <span>Admin</span>
+                </label>
+                <label class="checker-label">
+                    <input type="radio" name="role" value="0"<%= users[0].isAdmin === 0 ?'checked':'' %>> 
+                    <span>User</span>
+                </label>
+            </div>
+        </div>
+        <button type="submit" >Cập nhật</button>
+    </form>
+</div>
+<script src="js/edit-user-button.js"></script>

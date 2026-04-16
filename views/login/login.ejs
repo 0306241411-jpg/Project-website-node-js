@@ -1,33 +1,33 @@
 <div class="container login-container">
 
-    <form class="login-form shadow-lg">
+    <form action="/login" method="post" class="login-form shadow-lg">
 
         <h3 class="text-center mb-4">
-            Login
+            Đăng Nhập
         </h3>
 
         <div class="mb-3">
-            <label>Email address</label>
+            <label>Tên Người Dùng</label>
 
-            <input type="email" class="form-control" placeholder="Enter email">
+            <input type="text" class="form-control" name="username" placeholder="Enter email">
         </div>
 
         <div class="mb-3">
-            <label>Password</label>
+            <label>Mật Khẩu</label>
 
-            <input type="password" class="form-control" placeholder="Enter password">
+            <input type="password" class="form-control" name="password" placeholder="Enter password">
         </div>
 
         <div class="text-end mb-3">
             <a href="#" class="text-secondary">
-                Forgot password?
+                Quên mật khẩu?
             </a>
         </div>
 
         <button type="submit" class="btn btn-primary">
-            Login
+            Đăng nhập
         </button>
-
+         <a href="/register" class="btn btn btn-danger btn-block mt-2">Đăng Ký</a>
         <a href="/" class="btn btn-outline-secondary btn-block mt-2">Về trang chủ</a>
     </form>
 

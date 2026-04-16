@@ -1,0 +1,41 @@
+
+<div class="main-content">
+        <div class="header">
+            <h2>Danh sách Người dùng</h2>
+            <button class="btn-add" onclick="openAddModal()">+ Thêm Người Dùng</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên Người Dùng</th>
+                    <th>Mật Khẩu</th>
+                    <th>Chức Năng</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <% if(users && users.length > 0){%>
+                    <% users.forEach(user=>{%>
+                        <tr>
+                        <td><%= user.id %></td>
+                        <td><%= user.username %></td>
+                        <td><%= user.password %></td>
+                        <td>
+                    <button class="btn-action btn-edit" data-id = <%= user.id %> data-username = <%= user.username %> >
+                        Sửa
+                    </button>
+                    <button class="btn-action btn-delete" data-id = <%= user.id %> data-username = <%= user.username %> >
+                        Xóa
+                    </button>
+                    <button class="btn-action btn-reset-password" data-id = <%= user.id %> data-username = <%= user.username %> >
+                         Reset Mật Khẩu
+                    </button>
+                         </td>
+                        </tr>
+                        <%});%>
+                <%};%>
+                 </tbody>
+        </table>
+</div>
+<script src="js/users_management-buttons.js"></script>
