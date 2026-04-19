@@ -1,0 +1,72 @@
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">📁 Quản lý Chủ Đề (Danh mục)</h2>
+        <button class="btn btn-success fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+            + Thêm Chủ Đề Mới
+        </button>
+    </div>
+
+    <div class="card shadow border-0 mb-4 rounded-3">
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="text-center py-3" width="10%">ID</th>
+                        <th class="py-3">Tên Chủ Đề</th>
+                        <th class="text-center py-3" width="20%">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(typeof categories !== 'undefined' && categories.length > 0){ %>
+                        <% categories.forEach((cat) => { %>
+                            <tr>
+                                <td class="text-center align-middle fw-bold"><%= cat.id %></td>
+                                <td class="align-middle fw-bold text-primary fs-5"><%= cat.name %></td>
+                                <td class="text-center align-middle">
+                                    <button class="btn btn-sm btn-warning fw-bold px-3">Sửa</button>
+                                    <button class="btn btn-sm btn-danger fw-bold px-3">Xóa</button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-5 fs-5">Chưa có chủ đề nào trong hệ thống!</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <form action="/admin/categories/add" method="POST">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold">✨ Thêm Chủ Đề Mới</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-secondary">Tên Chủ Đề <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control form-control-lg" placeholder="Ví dụ: Thể thao, Giải trí..." required>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 bg-light">
+                    <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success px-4 fw-bold">💾 Lưu Chủ Đề</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    // Đẩy Modal ra ngoài cùng của Body để không bị xám màn hình
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.modal').forEach(function(modal) {
+            document.body.appendChild(modal);
+        });
+    });
+</script>

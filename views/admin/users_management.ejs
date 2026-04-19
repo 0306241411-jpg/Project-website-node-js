@@ -1,41 +1,54 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<div class="main-content">
-        <div class="header">
-            <h2>Danh sách Người dùng</h2>
-            <button class="btn-add" onclick="openAddModal()">+ Thêm Người Dùng</button>
-        </div>
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Danh sách Người dùng</h2>
+        <button class="btn btn-success fw-bold" onclick="openAddModal()">+ Thêm Người Dùng</button>
+    </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>STT</th>
-                    <th>Tên Người Dùng</th>
-                    <th>Mật Khẩu</th>
-                    <th>Chức Năng</th>
-                </tr>
-            </thead>
-            <tbody id="userTableBody">
-                <% if(users && users.length > 0){%>
-                    <% users.forEach((user,index)=>{%>
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-bordered table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th width="5%" class="text-center">STT</th>
+                        <th>Tên Người Dùng</th>
+                        <th>Mật Khẩu</th>
+                        <th width="25%" class="text-center">Chức Năng</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <% if(typeof users !== 'undefined' && users.length > 0){ %>
+                        <% users.forEach((user, index) => { %>
+                            <tr>
+                                <td class="text-center align-middle fw-bold"><%= index + 1 %></td>
+                                <td class="align-middle"><%= user.username %></td>
+                                <td class="align-middle text-muted">
+                                    ***<%= user.password.substring(3) || user.password %>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <button class="btn btn-sm btn-warning btn-edit" data-id="<%= user.id %>" data-username="<%= user.username %>">
+                                        Sửa
+                                    </button>
+                                    <button class="btn btn-sm btn-danger btn-delete" data-id="<%= user.id %>" data-username="<%= user.username %>">
+                                        Xóa
+                                    </button>
+                                    <button class="btn btn-sm btn-info text-white btn-reset-password" data-id="<%= user.id %>" data-username="<%= user.username %>">
+                                        Reset MK
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
                         <tr>
-                        <td><%= index + 1 %></td>
-                        <td><%= user.username %></td>
-                        <td><%= user.password %></td>
-                        <td>
-                    <button class="btn-action btn-edit" data-id = <%= user.id %> data-username = <%= user.username %> >
-                        Sửa
-                    </button>
-                    <button class="btn-action btn-delete" data-id = <%= user.id %> data-username = <%= user.username %> >
-                        Xóa
-                    </button>
-                    <button class="btn-action btn-reset-password" data-id = <%= user.id %> data-username = <%= user.username %> >
-                         Reset Mật Khẩu
-                    </button>
-                         </td>
+                            <td colspan="4" class="text-center text-muted py-4">Chưa có dữ liệu người dùng</td>
                         </tr>
-                        <%});%>
-                <%};%>
-                 </tbody>
-        </table>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
 <script src="/js/users_management_buttons.js"></script>
