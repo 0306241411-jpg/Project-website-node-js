@@ -1,0 +1,106 @@
+
+
+
+<div class="row justify-content-center mt-4 mb-5">
+    <div class="col-12 col-md-8 text-center">
+        <% if (typeof post !== 'undefined') { %>
+            <h1 class="fw-bold mb-3 text-start"><%= post.title %></h1>
+            
+            <p class="text-muted small text-start">
+                <i class="bi bi-calendar3"></i> Ngày đăng: <%= post.created_at ? new Date(post.created_at).toLocaleDateString('vi-VN') : 'Vừa mới đây' %>
+            </p>
+
+            <img src="/img/<%= post.image %>" alt="<%= post.title %>" class="img-fluid rounded shadow-sm mb-4" style="max-height: 500px; object-fit: cover; width: 100%;">
+            
+            <div class="post-content text-start fs-5 lh-lg">
+                <%- post.content %>
+            </div>
+            
+        <% } else { %>
+            <div class="alert alert-danger">Bài viết này không tồn tại hoặc đã bị xóa!</div>
+        <% } %>
+    </div>
+</div>
+
+<hr class="w-75 mx-auto my-5">
+
+
+
+
+<div class="row justify-content-center mt-5">
+    <div class="col-12 col-md-8">
+        <h3 class="fw-bold border-bottom pb-2 border-danger border-3 mb-4">BÌNH LUẬN</h3>
+
+        <div class="card shadow-sm border-0 bg-light mb-5">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Để lại bình luận của bạn</h5>
+                
+                <form action="/single" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="post_id" value="<%= typeof post !== 'undefined' ? post.id : 1 %>">
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label fw-bold">Tên của bạn <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Ví dụ: An Nguyễn" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label fw-bold">Email (Không bắt buộc)</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Để trống cũng được...">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="content" class="form-label fw-bold">Nội dung <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="content" name="content" rows="4" placeholder="Viết suy nghĩ của bạn về bài viết này..." required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Đính kèm hình ảnh (Tùy chọn)</label>
+                        <input type="file" class="form-control" name="comment_image" accept="image/*">
+                    </div>
+
+                    <button type="submit" class="btn btn-danger px-4 fw-bold">Gửi Bình Luận</button>
+                </form>
+            </div>
+        </div>
+
+        <h5 class="fw-bold mb-4">Các bình luận khác</h5>
+        
+        <% if (typeof comments !== 'undefined' && comments.length > 0) { %>
+            <% comments.forEach(comment => { %>
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <h6 class="fw-bold text-dark mb-0">
+                                <i class="bi bi-person-circle text-secondary me-1"></i> <%= comment.name %>
+                                <% if(comment.name.toLowerCase() === 'admin') { %>
+                                    <span class="badge bg-danger ms-1">Quản trị viên</span>
+                                <% } %>
+                            </h6>
+                            <small class="text-muted"><%= new Date(comment.created_at).toLocaleDateString('vi-VN') %></small>
+                        </div>
+                        
+                        <p class="card-text text-muted mb-2"><%= comment.content %></p>
+                        
+
+                            
+
+
+                        <% if (comment.image) { %>
+                            <div class="comment-img mt-2">
+                                <img src="/img/<%= comment.image %>" alt="Ảnh bình luận" class="rounded shadow-sm" style="max-width: 150px; height: auto; border: 1px solid #ddd;">
+                            </div>
+                        <% } %>
+
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="text-center p-4 bg-light rounded border-0 shadow-sm">
+                <i class="bi bi-chat-dots fs-1 text-secondary mb-2 d-block"></i>
+                <p class="text-muted mb-0">Chưa có bình luận nào. Hãy là người đầu tiên bóc tem bài viết này!</p>
+            </div>
+        <% } %>
+
+    </div>
+</div>
+

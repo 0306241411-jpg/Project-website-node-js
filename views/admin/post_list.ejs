@@ -1,0 +1,232 @@
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">📝 Quản lý Bài Viết</h2>
+        <button class="btn btn-success fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#addPostModal">
+            + Thêm Bài Viết Mới
+        </button>
+    </div>
+
+    <div class="card shadow-sm mb-4 border-0 bg-light">
+        <div class="card-body">
+            <form action="/admin/posts" method="GET" class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <input type="text" name="keyword" class="form-control" placeholder="Tìm kiếm theo tiêu đề bài viết..." value="<%= typeof keyword !== 'undefined' ? keyword : '' %>">
+                </div>
+                <div class="col-md-3">
+                    <select name="category_id" class="form-select">
+                        <option value="">-- Tất cả chủ đề --</option>
+                        <% if(typeof categories !== 'undefined'){ %>
+                            <% categories.forEach(cat => { %>
+                                <option value="<%= cat.id %>" <%= typeof category_filter !== 'undefined' && category_filter == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+                            <% }) %>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary fw-bold">Lọc & Tìm kiếm</button>
+                    <a href="/admin/posts" class="btn btn-secondary">Xem tất cả</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow border-0 mb-4 rounded-3">
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="text-center">ID</th>
+                        <th class="text-center">Hình ảnh</th>
+                        <th>Tiêu đề</th>
+                        <th>Tác giả</th>
+                        <th>Chủ đề</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(typeof posts !== 'undefined' && posts.length > 0){ %>
+                        <% posts.forEach((post) => { %>
+                            <tr>
+                                <td class="text-center align-middle fw-bold"><%= post.id %></td>
+                                <td class="text-center align-middle">
+                                    <% if(post.image) { %>
+                                        <img src="/img/<%= post.image %>" width="70" height="70" style="object-fit: cover; border-radius: 5px; border: 1px solid #ccc;" alt="Ảnh">
+                                    <% } else { %>
+                                        <span class="text-muted small">Không ảnh</span>
+                                    <% } %>
+                                </td>
+                                <td class="align-middle fw-bold text-primary"><%= post.title %></td>
+                                <td class="align-middle"><%= post.author %></td>
+                                <td class="align-middle"><span class="badge bg-info text-dark"><%= post.category_name || 'Chưa phân loại' %></span></td>
+                                <td class="align-middle">
+                                    <span class="badge <%= post.status === 'Hiển thị' ? 'bg-success' : 'bg-secondary' %>">
+                                        <%= post.status %>
+                                    </span>
+                                </td>
+                                <td class="text-center align-middle">
+                                    <button class="btn btn-sm btn-warning fw-bold px-3" data-bs-toggle="modal" data-bs-target="#editPostModal<%= post.id %>">Sửa</button>
+                                    <a href="/admin/posts/delete/<%= post.id %>" class="btn btn-sm btn-danger fw-bold px-3" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?');">Xóa</a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% } else { %>
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5 fs-5">Không có bài viết nào trong hệ thống!</td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <% if(typeof totalPages !== 'undefined' && totalPages > 1) { %>
+        <% 
+            let safeKeyword = typeof keyword !== 'undefined' ? keyword : '';
+            let safeCat = typeof category_filter !== 'undefined' ? category_filter : '';
+            let safePage = typeof currentPage !== 'undefined' ? currentPage : 1;
+        %>
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item <%= safePage === 1 ? 'disabled' : '' %>">
+                    <a class="page-link" href="?page=<%= safePage - 1 %>&keyword=<%= safeKeyword %>&category_id=<%= safeCat %>">Trang trước</a>
+                </li>
+                <% for(let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= safePage === i ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>&keyword=<%= safeKeyword %>&category_id=<%= safeCat %>"><%= i %></a>
+                    </li>
+                <% } %>
+                <li class="page-item <%= safePage === totalPages ? 'disabled' : '' %>">
+                    <a class="page-link" href="?page=<%= safePage + 1 %>&keyword=<%= safeKeyword %>&category_id=<%= safeCat %>">Trang sau</a>
+                </li>
+            </ul>
+        </nav>
+    <% } %>
+</div>
+
+<div class="modal fade" id="addPostModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <form action="/admin/posts/add" method="POST" enctype="multipart/form-data">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold">✨ Viết Bài Mới</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tiêu đề bài viết <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Chủ đề</label>
+                            <select name="category_id" class="form-select">
+                                <% if(typeof categories !== 'undefined'){ %>
+                                    <% categories.forEach(cat => { %>
+                                        <option value="<%= cat.id %>"><%= cat.name %></option>
+                                    <% }) %>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Trạng thái</label>
+                            <select name="status" class="form-select">
+                                <option value="Hiển thị">Hiển thị</option>
+                                <option value="Ẩn">Ẩn (Bản nháp)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Tác giả</label>
+                            <input type="text" name="author" class="form-control" value="Admin">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Hình ảnh đại diện</label>
+                            <input type="file" name="image" class="form-control" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nội dung bài viết <span class="text-danger">*</span></label>
+                        <textarea name="content" class="form-control" rows="5" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success px-4 fw-bold">💾 Đăng bài viết</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<% if(typeof posts !== 'undefined' && posts.length > 0){ %>
+    <% posts.forEach((post) => { %>
+        <div class="modal fade" id="editPostModal<%= post.id %>" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content shadow-lg border-0">
+                    <form action="/admin/posts/edit/<%= post.id %>" method="POST" enctype="multipart/form-data">
+                        <div class="modal-header bg-warning text-dark">
+                            <h5 class="modal-title fw-bold">✏️ Sửa Bài Viết (ID: <%= post.id %>)</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4 text-start">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Tiêu đề bài viết</label>
+                                <input type="text" name="title" class="form-control" value="<%= post.title %>" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Chủ đề</label>
+                                    <select name="category_id" class="form-select">
+                                        <% if(typeof categories !== 'undefined'){ %>
+                                            <% categories.forEach(cat => { %>
+                                                <option value="<%= cat.id %>" <%= post.category_id == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+                                            <% }) %>
+                                        <% } %>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Trạng thái</label>
+                                    <select name="status" class="form-select">
+                                        <option value="Hiển thị" <%= post.status === 'Hiển thị' ? 'selected' : '' %>>Hiển thị</option>
+                                        <option value="Ẩn" <%= post.status === 'Ẩn' ? 'selected' : '' %>>Ẩn (Bản nháp)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Tác giả</label>
+                                    <input type="text" name="author" class="form-control" value="<%= post.author %>">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Đổi ảnh mới (Nếu có)</label>
+                                    <input type="file" name="image" class="form-control" accept="image/*">
+                                    <small class="text-danger">Để trống nếu muốn giữ hình ảnh cũ</small>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Nội dung bài viết</label>
+                                <textarea name="content" class="form-control" rows="5" required><%= post.content %></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top-0">
+                            <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-warning px-4 fw-bold">💾 Lưu Thay Đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <% }); %>
+<% } %>
+<script>
+    // Di chuyển toàn bộ các Modal ra ngoài cùng của <body>
+    // Giúp Modal không bị kẹt phía sau lớp phủ đen của Layout Admin
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.modal').forEach(function(modal) {
+            document.body.appendChild(modal);
+        });
+    });
+</script>

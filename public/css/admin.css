@@ -1,0 +1,177 @@
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; display: flex; background-color: #f4f7f6; }
+.sidebar { width: 250px; background-color: #2c3e50; color: white; height: 100vh; padding: 20px; box-sizing: border-box; }
+.sidebar h2 { margin-top: 0; font-size: 1.5rem; text-align: center; border-bottom: 1px solid #34495e; padding-bottom: 10px; }
+.sidebar ul { list-style: none; padding: 0; }    
+
+/* ĐÃ CẬP NHẬT: Đưa padding về 0 để nhường không gian cho thẻ a */
+.sidebar ul li { border-bottom: 1px solid #34495e; transition: 0.3s; padding: 0; }
+.sidebar ul li:hover { background-color: #34495e; }
+
+/* MỚI THÊM: Định dạng thẻ a lấp đầy diện tích của thẻ li */
+.sidebar ul li a { 
+    display: block; 
+    padding: 15px 10px; 
+    color: white; 
+    text-decoration: none; 
+    cursor: pointer;
+}
+
+.main-content { flex: 1; padding: 30px; box-sizing: border-box; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.btn-add { background-color: #27ae60; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+.btn-add:hover { background-color: #2ecc71; }
+
+table { width: 100%; border-collapse: collapse; background-color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+th, td { text-align: left; padding: 15px; border-bottom: 1px solid #ddd; }
+th { background-color: #ecf0f1; color: #333; }
+tr:hover { background-color: #f9f9f9; }
+
+.action-btns button { padding: 5px 10px; margin-right: 5px; border: none; border-radius: 3px; cursor: pointer; color: white; }
+.btn-edit { background-color: #f39c12; }
+.btn-delete { background-color: #e74c3c; }
+
+/* Style chung cho các nút trong bảng */
+.btn-action {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-right: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px; /* Khoảng cách giữa icon và chữ */
+}
+
+/* Nút Sửa - Màu Xanh Dương/Lá */
+.btn-edit {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-edit:hover {
+    background-color: #2980b9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.btn-reset-password {
+  background-color: #f39c12;
+  color: white;
+}
+.btn-reset-password:hover {
+    background-color: #db9931;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+/* Nút Xóa - Màu Đỏ */
+.btn-delete {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.btn-delete:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Hiệu ứng khi nhấn nút */
+.btn-action:active {
+    transform: translateY(0);
+}
+
+.admin-form { max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+.form-group input { width: 100%; padding: 8px; box-sizing: border-box; }
+.form-group button { padding: 10px 15px; background-color: #28a745; color: white; border: none; cursor: pointer; width: 100%; }
+.form-group button:hover { background-color: #218838; } 
+
+/* =========================================
+   STYLE CHO CHECKER GỌN NHẸ (DẠNG TOGGLE BUTTON)
+   ========================================= */
+
+/* 1. Khung chứa 2 lựa chọn */
+.admin-form .checker-group {
+    display: flex;
+    background-color: #f1f3f5; /* Nền xám nhạt */
+    border-radius: 8px;
+    padding: 4px; /* Viền trong mỏng để tạo độ sâu */
+    gap: 4px;
+}
+
+/* 2. Cấu trúc Label bọc ngoài */
+.admin-form .checker-label {
+    flex: 1; /* Chia đều 50/50 chiều rộng cho Admin và User */
+    margin: 0;
+    cursor: pointer;
+}
+
+/* 3. Ẩn đi nút Radio tròn mặc định cho đỡ tốn chỗ */
+.admin-form .checker-label input[type="radio"] {
+    display: none; 
+}
+
+/* 4. Định dạng chữ (span) lúc bình thường (chưa chọn) */
+.admin-form .checker-label span {
+    display: block;
+    text-align: center;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6c757d;
+    transition: all 0.25s ease; /* Hiệu ứng chuyển màu mượt mà */
+}
+
+/* 5. Định dạng chữ (span) lúc ĐƯỢC CHỌN */
+.admin-form .checker-label input[type="radio"]:checked + span {
+    background-color: #ffffff; /* Biến thành nút màu trắng nổi lên */
+    color: #0056b3; /* Chữ đổi sang xanh dương */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08); /* Thêm bóng đổ nhẹ */
+}
+.admin-form button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background-color: #007bff; /* Xanh dương tiêu chuẩn */
+    color: #ffffff;
+    border: none;
+    border-radius: 6px; /* Bo góc nhẹ */
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s; /* Đổi màu mượt khi di chuột */
+}
+
+/* Khi đưa chuột vào */
+.admin-form button[type="submit"]:hover {
+    background-color: #0056b3; /* Xanh đậm hơn 1 chút */
+}
+
+/* Khi click (tạo cảm giác nhấn xuống) */
+.admin-form button[type="submit"]:active {
+    transform: translateY(1px); 
+}
+
+
+
+.main-content {
+    margin-left: 250px; /* Đẩy nội dung sang phải để tránh bị sidebar che */
+    padding: 20px;
+    width: calc(100% - 250px);
+    position: relative;
+    z-index: 1; /* Đưa nội dung nổi lên trên */
+}
+
+/* Đảm bảo khung menu trái không tràn ra ngoài */
+.sidebar {
+    width: 250px;
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 10; 
+}

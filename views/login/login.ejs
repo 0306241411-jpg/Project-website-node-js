@@ -1,0 +1,84 @@
+<div class="container login-container">
+    <form action="/login" method="post" class="login-form shadow-lg" id="loginForm" novalidate>
+
+        <h3 class="text-center mb-4">
+            Đăng Nhập
+        </h3>
+
+        <div class="mb-3">
+            <label>Tên Người Dùng (Email)</label>
+            <input type="email" id="emailInput" class="form-control" name="username" placeholder="Nhập email...">
+            <small id="emailWarning" class="text-danger mt-1" style="display: none; font-weight: bold;"></small>
+        </div>
+
+        <div class="mb-3">
+            <label>Mật Khẩu</label>
+            <input type="password" id="passwordInput" class="form-control" name="password" placeholder="Nhập mật khẩu...">
+            <small id="passwordWarning" class="text-danger mt-1" style="display: none; font-weight: bold;">
+                ⚠️ Vui lòng nhập mật khẩu
+            </small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Đăng nhập
+        </button>
+        <a href="/" class="btn btn-outline-secondary btn-block mt-2">Về trang chủ</a>
+    </form>
+</div>
+
+<script>
+    const form = document.getElementById('loginForm');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const emailWarning = document.getElementById('emailWarning');
+    const passwordWarning = document.getElementById('passwordWarning');
+
+    // Hàm kiểm tra Email
+    function checkEmail() {
+        const val = emailInput.value.trim();
+        if (val === '') {
+            emailWarning.textContent = '⚠️ Vui lòng nhập email';
+            emailWarning.style.display = 'block';
+            return false;
+        } else if (!val.endsWith('@gmail.com')) {
+            emailWarning.textContent = '⚠️ Bạn phải nhập tài khoản có đuôi @gmail.com';
+            emailWarning.style.display = 'block';
+            return false;
+        } else {
+            emailWarning.style.display = 'none'; // Nhập đúng thì ẩn đi
+            return true;
+        }
+    }
+
+    // Hàm kiểm tra Mật khẩu
+    function checkPassword() {
+        const val = passwordInput.value.trim();
+        if (val === '') {
+            passwordWarning.style.display = 'block';
+            return false;
+        } else {
+            passwordWarning.style.display = 'none'; // Đã nhập thì ẩn đi
+            return true;
+        }
+    }
+
+    // 1. KIỂM TRA LIÊN TỤC KHI ĐANG GÕ (Sự kiện 'input')
+    emailInput.addEventListener('input', checkEmail);
+    passwordInput.addEventListener('input', checkPassword);
+
+    // 2. KIỂM TRA KHI VỪA CLICK CHUỘT RA KHỎI Ô NHẬP (Sự kiện 'blur')
+    // (Giúp báo lỗi ngay cả khi người dùng bấm vào ô nhưng không gõ gì mà bấm ra ngoài)
+    emailInput.addEventListener('blur', checkEmail);
+    passwordInput.addEventListener('blur', checkPassword);
+
+    // 3. CHẶN NÚT ĐĂNG NHẬP NẾU CÒN LỖI
+    form.addEventListener('submit', function(event) {
+        const isEmailValid = checkEmail();
+        const isPasswordValid = checkPassword();
+
+        // Nếu 1 trong 2 ô chưa hợp lệ, chặn gửi dữ liệu lên server
+        if (!isEmailValid || !isPasswordValid) {
+            event.preventDefault(); 
+        }
+    });
+</script>

@@ -1,0 +1,45 @@
+<div class="container-fluid">
+    <h1 class="fw-bold text-primary">🔔Quản lý người đăng ký nhận tin</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Danh sách các Email đã đăng ký</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th width="10%">ID</th>
+                            <th>Email</th>
+                            <th width="20%">Thời gian đăng ký</th>
+                            <th width="15%">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (subscribers && subscribers.length > 0) { %>
+                            <% subscribers.forEach(function(sub) { %>
+                                <tr>
+                                    <td><%= sub.id %></td>
+                                    <td><%= sub.email %></td>
+                                    <td><%= sub.created_at ? new Date(sub.created_at).toLocaleString('vi-VN') : 'Không rõ' %></td>
+                                    <td>
+                                        <a href="/admin/subscribers/delete/<%= sub.id %>" 
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Bạn có chắc chắn muốn xóa email này không?');">
+                                           Xóa
+                                        </a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="4" class="text-center">Chưa có ai đăng ký.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
