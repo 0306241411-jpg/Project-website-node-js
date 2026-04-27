@@ -164,7 +164,7 @@ router.post("/login", async (req, res) => {
         .send("Lỗi: Tên đăng nhập bắt buộc phải là tài khoản @gmail.com!");
     }
     const sql = "SELECT * FROM users WHERE username=? AND password=?";
-    const [rows] = await pool.execute(sql, [username_beforeGmail, password]);
+    const [rows] = await pool.execute(sql, [username, password]);
 
     if (rows.length > 0) {
       if (rows[0].isAdmin === 1) return res.redirect("/admin/users_management");
