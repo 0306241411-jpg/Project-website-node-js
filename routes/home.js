@@ -163,6 +163,7 @@ router.post("/login", async (req, res) => {
         .status(500)
         .send("Lỗi: Tên đăng nhập bắt buộc phải là tài khoản @gmail.com!");
     }
+    username = username.split("@")[0];
     const sql = "SELECT * FROM users WHERE username=? AND password=?";
     const [rows] = await pool.execute(sql, [username, password]);
 
