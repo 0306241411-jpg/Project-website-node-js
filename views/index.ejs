@@ -1,24 +1,6 @@
-   <!-- Main News Slider Start -->
-   <!-- <%- include('partials_index/main_news.ejs') -%> -->
-    <!-- Main News Slider End -->
 
-
-    <!-- Breaking News Start -->
-    <!-- <%- include('partials_index/breaking_news.ejs') -%> -->
-    <!-- Breaking News End -->
-
-
-    <!-- Featured News Slider Start -->
-    <!-- <%- include('partials_index/featured_news.ejs') -%> -->
-    <!-- Featured News Slider End -->
-
-
-    <!-- News With Sidebar Start -->
-    <!-- <%- include('partials_index/news.ejs') -%> -->
-    <!-- News With Sidebar End -->
-
-
- <div class="container mt-4">
+     
+<div class="container mt-4">
     <div class="row mb-4">
         <div class="col-12">
             <h2 class="fw-bold border-bottom pb-2 border-danger border-3" style="display: inline-block;">
@@ -44,7 +26,7 @@
                             <%= post.created_at ? new Date(post.created_at).toLocaleDateString('vi-VN') : 'Vừa mới đây' %>
                         </p>
                         
-                        <div class="card-text text-muted mb-3" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                        <div class="card-text text-muted mb-3" style="display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                             <%- post.content %>
                             
                         </div>
@@ -63,4 +45,37 @@
     <% } %>
 </div>
 </div>
+
+<% if (totalPages > 1) { %>
+    <nav aria-label="Page navigation" class="mt-5">
+        <ul class="pagination justify-content-center">
+            
+            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                <a class="page-link text-danger border-danger" href="/?page=<%= currentPage - 1 %>">
+                    &laquo; Trang trước
+                </a>
+            </li>
+
+            <% for(let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                    <a class="page-link <%= currentPage === i ? 'bg-danger border-danger text-white' : 'text-danger border-danger' %>" 
+                       href="/?page=<%= i %>">
+                        <%= i %>
+                    </a>
+                </li>
+            <% } %>
+
+            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                <a class="page-link text-danger border-danger" href="/?page=<%= currentPage + 1 %>">
+                    Trang sau &raquo;
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+<% } %>
+
+    <!-- Featured News Slider Start -->
+    <!-- <%- include('partials_index/featured_news.ejs') -%> -->
+    <!-- Featured News Slider End -->
 

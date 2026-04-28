@@ -26,15 +26,34 @@ const upload = multer({ storage: storage });
 // Trang chủ (Có load bài viết)
 router.get("/", async (req, res) => {
   try {
-    const sql = "SELECT * FROM posts ORDER BY id DESC";
-    const [posts] = await pool.execute(sql);
-    res.render("layout", { content: "index", posts: posts });
+    // 1. Bắt số trang từ thanh địa chỉ (nếu không có thì mặc định là trang 1)
+    const page = parseInt(req.query.page) || 1;
+    const limit = 6; // Giới hạn 6 bài 1 trang
+    const offset = (page - 1) * limit; // Tính toán vị trí bắt đầu cắt dữ liệu
+
+    // 2. Tính tổng số trang (Đếm xem có tất cả bao nhiêu bài)
+    const countSql = "SELECT COUNT(*) AS total FROM posts";
+    const [countResult] = await pool.execute(countSql);
+    const totalPages = Math.ceil(countResult[0].total / limit);
+
+    // 3. Sửa câu lệnh SQL của bạn: Giữ nguyên ORDER BY id DESC, thêm LIMIT và OFFSET
+    const sql = "SELECT * FROM posts ORDER BY id DESC LIMIT ? OFFSET ?";
+    
+    // Dùng pool.query ở đây sẽ an toàn hơn pool.execute khi truyền tham số cho LIMIT
+    const [posts] = await pool.query(sql, [limit, offset]); 
+
+    // 4. Trả dữ liệu về EJS: Giữ nguyên code của bạn, chỉ "nhồi" thêm 2 biến mới
+    res.render("layout", { 
+        content: "index", 
+        posts: posts,
+        currentPage: page,       // Gửi trang hiện tại ra EJS để tô màu nút
+        totalPages: totalPages   // Gửi tổng số trang ra EJS để vẽ vòng lặp
+    });
   } catch (err) {
     console.error("Lỗi:", err);
     res.status(500).send("Lỗi Server");
   }
 });
-
 // ==========================================
 // QUẢN LÝ CHỦ ĐỀ (DANH MỤC)
 // ==========================================
@@ -101,32 +120,62 @@ router.get("/contact", (req, res) =>
   res.render("layout", { content: "contact" }),
 );
 
+router.post("/contact", async (req, res) => {
+    try {
+        // Lấy đầy đủ 4 trường từ Form
+        const { name, email, subject, message } = req.body;
+        
+        const sql = "INSERT INTO contacts (name, email, subject, message) VALUES (?, ?, ?, ?)";
+        await pool.execute(sql, [name, email, subject, message]);
+
+        res.redirect("/contact?status=success");
+    } catch (err) {
+        console.error("LỖI SQL:", err);
+        res.status(500).send("Không thể gửi tin nhắn lúc này.");
+    }
+});
+
 // Chi tiết bài viết & Bình luận (Có ID)
 router.get("/single/:id", async (req, res) => {
   try {
     const postId = req.params.id;
+
+    // 1. Giữ nguyên: Lấy bài viết chính
     const [posts] = await pool.execute("SELECT * FROM posts WHERE id = ?", [
-      postId,
+      postId
     ]);
+
+    // 2. Giữ nguyên: Lấy bình luận
     const [comments] = await pool.execute(
       "SELECT * FROM comments WHERE post_id = ? ORDER BY created_at DESC",
       [postId],
     );
 
     if (posts.length > 0) {
+      const currentPost = posts[0]; // Gán bài viết hiện tại vào biến để dễ dùng
+
+      // 3. THÊM MỚI: Lấy bài viết liên quan
+      // Điều kiện: cùng category_id, khác id hiện tại và status phải là 'Hiển thị'
+      const [relatedPosts] = await pool.execute(
+        "SELECT * FROM posts WHERE category_id = ? AND id != ? AND status = 'Hiển thị' LIMIT 3",
+        [currentPost.category_id, postId]
+      );
+
+      // 4. Sửa res.render: Truyền thêm biến relatedPosts ra giao diện
       res.render("layout", {
         content: "single",
-        post: posts[0],
+        post: currentPost,
         comments: comments,
+        relatedPosts: relatedPosts, // BẮT BUỘC phải có dòng này thì EJS mới nhận được dữ liệu
       });
     } else {
       res.status(404).send("Không tìm thấy bài viết!");
     }
   } catch (err) {
+    console.error("LỖI CHI TIẾT TẠI ROUTE SINGLE:", err);
     res.status(500).send("Lỗi Server");
   }
 });
-
 // Xử lý Gửi bình luận (Có up ảnh)
 router.post("/single", upload.single("comment_image"), async (req, res) => {
   try {
@@ -137,6 +186,7 @@ router.post("/single", upload.single("comment_image"), async (req, res) => {
     await pool.execute(sql, [post_id, name, email, content, image]);
     res.redirect(`/single/${post_id}`);
   } catch (err) {
+    console.log(err);
     res.status(500).send("Lỗi Server khi gửi bình luận");
   }
 });
@@ -202,27 +252,15 @@ router.get("/admin/edit_users/:id", async (req, res) => {
 
 router.put("/admin/edit_user/:id", async (req, res) => {
   try {
-    const { username, password, role } = req.body;
-    const sql = "UPDATE users SET username=?, password=?, isAdmin=? WHERE id=?";
+    const { username, password} = req.body;
+    const sql = "UPDATE users SET username=?, password=? WHERE id=?";
     const [result] = await pool.execute(sql, [
       username,
       password,
-      role,
       req.params.id,
     ]);
     if (result.affectedRows > 0) return res.json({ success: true });
     else return res.json({ success: false, message: "Không tìm thấy User" });
-  } catch (err) {
-    res.status(500).send("Lỗi Server");
-  }
-});
-
-router.put("/admin/users_management/:id", async (req, res) => {
-  try {
-    const sql = "UPDATE users SET password = 1234 WHERE id = ?";
-    const [result] = await pool.execute(sql, [req.params.id]);
-    if (result.affectedRows > 0) return res.json({ success: true });
-    else return res.json({ success: false, message: "Không tìm thấy user" });
   } catch (err) {
     res.status(500).send("Lỗi Server");
   }
@@ -346,7 +384,6 @@ router.post(
       }
       res.redirect("/admin/posts");
     } catch (err) {
-      console.log(err);
       res.send("Lỗi sửa bài viết");
     }
   },
@@ -358,7 +395,6 @@ router.get("/admin/posts/delete/:id", async (req, res) => {
     await pool.query("DELETE FROM posts WHERE id = ?", [req.params.id]);
     res.redirect("/admin/posts");
   } catch (err) {
-    console.log(err);
     res.send("Lỗi xóa bài viết");
   }
 });
