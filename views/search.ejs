@@ -1,0 +1,31 @@
+<div class="container-fluid mt-5 pt-3 pb-5">
+    <div class="container">
+        <div class="section-title">
+            <h4 class="m-0 text-uppercase font-weight-bold">Kết quả tìm kiếm cho: "<%= keyword %>"</h4>
+        </div>
+        
+        <div class="row g-4">
+            <% if (posts.length > 0) { %>
+                <% posts.forEach(post => { %>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100 shadow-sm border-0 bg-light">
+                            <img src="/img/<%= post.image %>" class="card-img-top" style="height: 200px; object-fit: cover;">
+                            <div class="card-body d-flex flex-column p-4">
+                                <h5 class="card-title fw-bold"><%= post.title %></h5>
+                                <div class="card-text text-muted mb-3" style="display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2;overflow: hidden; -webkit-box-orient: vertical;">
+                                    <%- post.content.replace(/<[^>]*>/g, '') %>
+                                </div>
+                                <a href="/single/<%= post.id %>" class="btn btn-outline-danger mt-auto">Đọc tiếp &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="col-12 text-center py-5">
+                    <h4 class="text-muted">Không tìm thấy bài viết nào phù hợp với từ khóa này.</h4>
+                    <a href="/" class="btn btn-primary mt-3">Quay lại trang chủ</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>

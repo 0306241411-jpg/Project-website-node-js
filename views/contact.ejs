@@ -1,6 +1,7 @@
-<% if (typeof status !== 'undefined' && status === 'success') { %>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <strong>Thành công!</strong> Tin nhắn của bạn đã được gửi đi.
+<% if (typeof successMessage !== 'undefined' && successMessage.length > 0) { %>
+    <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 bg-light" role="alert" style="border-left: 5px solid #28a745 !important;">
+        <i class="fa fa-check-circle text-success mr-2" style="font-size: 1.2rem; vertical-align: middle;"></i>
+        <span class="text-dark"><%= successMessage %></span>
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>

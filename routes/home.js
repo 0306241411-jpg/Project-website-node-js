@@ -116,9 +116,21 @@ router.get("/admin/categories/delete/:id", async (req, res) => {
   }
 });
 
-router.get("/contact", (req, res) =>
-  res.render("layout", { content: "contact" }),
-);
+// Hàm hiển thị trang liên hệ
+router.get("/contact", (req, res) => {
+    let msg = "";
+    
+    // Kiểm tra xem trên thanh URL có đuôi ?status=success không
+    if (req.query.status === "success") {
+        msg = "Cảm ơn bạn! Tin nhắn đã được gửi thành công, chúng tôi sẽ phản hồi sớm nhất.";
+    }
+
+    // Render giao diện và truyền biến successMessage ra EJS
+    res.render("layout", {
+        content: "contact",
+        successMessage: msg 
+    });
+});
 
 router.post("/contact", async (req, res) => {
     try {
@@ -132,6 +144,43 @@ router.post("/contact", async (req, res) => {
     } catch (err) {
         console.error("LỖI SQL:", err);
         res.status(500).send("Không thể gửi tin nhắn lúc này.");
+    }
+});
+
+// router.get("/news",(req,res)=>{
+//   console.error();
+//   res.render("layout",{content:"partials_index/news"});
+// });
+
+router.get("/news", async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = 5; // Trang tin tức nên hiện danh sách dọc, khoảng 5-8 bài là đẹp
+        const offset = (page - 1) * limit;
+
+        // 1. Lấy tất cả bài viết
+        const [posts] = await pool.execute(
+            "SELECT p.*, c.name as category_name FROM posts p JOIN categories c ON p.category_id = c.id WHERE p.status = 'Hiển thị' ORDER BY p.created_at DESC LIMIT ? OFFSET ?",
+            [limit.toString(), offset.toString()]
+        );
+
+        // 2. Tính tổng trang
+        const [totalResult] = await pool.execute("SELECT COUNT(*) as total FROM posts WHERE status = 'Hiển thị'");
+        const totalPages = Math.ceil(totalResult[0].total / limit);
+
+        // 3. Lấy tin xu hướng cho Sidebar
+        const [trending] = await pool.execute("SELECT * FROM posts ORDER BY id ASC LIMIT 5");
+
+        res.render("layout", {
+            content: "partials_index/news",
+            posts: posts,
+            trending: trending,
+            currentPage: page,
+            totalPages: totalPages
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Lỗi tải trang tin tức");
     }
 });
 
@@ -192,9 +241,58 @@ router.post("/single", upload.single("comment_image"), async (req, res) => {
 });
 
 //nút kết nối trang category.ejs
-router.get("/category", (req, res) =>
-  res.render("layout", { content: "category" }),
-);
+
+router.get("/category", async (req, res) =>{
+ try {
+        const [cats] = await pool.execute("SELECT * FROM categories");
+        res.render("layout", {
+            content: "category", 
+            categories: cats
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Lỗi tải danh sách danh mục");
+    }
+});
+
+router.get("/category/:id", async (req, res) => {
+    try {
+        const catId = req.params.id;
+        const page = parseInt(req.query.page) || 1; // Lấy số trang từ URL
+        const limit = 6; // Khống chế 6 bài (3 bài x 2 dòng)
+        const offset = (page - 1) * limit;
+
+        // 1. Lấy thông tin tên danh mục
+        const [cats] = await pool.execute("SELECT name FROM categories WHERE id = ?", [catId]);
+        if (cats.length === 0) return res.redirect('/category');
+
+        // 2. Lấy 6 bài viết của danh mục đó theo trang hiện tại
+        const [posts] = await pool.execute(
+            "SELECT * FROM posts WHERE category_id = ? AND status = 'Hiển thị' ORDER BY created_at DESC LIMIT ? OFFSET ?",
+            [catId, limit.toString(), offset.toString()]
+        );
+
+        // 3. Tính toán tổng số bài để làm phân trang
+        const [totalResult] = await pool.execute(
+            "SELECT COUNT(*) as total FROM posts WHERE category_id = ? AND status = 'Hiển thị'",
+            [catId]
+        );
+        const totalPages = Math.ceil(totalResult[0].total / limit);
+
+        // Render ra giao diện
+        res.render("layout", {
+            content: "category_detail",
+            categoryName: cats[0].name,
+            posts: posts,
+            currentPage: page,
+            totalPages: totalPages,
+            catId: catId
+        });
+    } catch (err) {
+        console.error("LỖI CATEGORY:", err);
+        res.status(500).send("Có lỗi xảy ra");
+    }
+});
 
 // ==============================================
 // 2. TÍNH NĂNG ĐĂNG NHẬP & ADMIN (CỦA CODE 2 GIỮ NGUYÊN)
@@ -485,6 +583,36 @@ router.post("/admin/users_management/add", async (req, res) => {
     console.error(err);
     res.status(500).send("Lỗi Database!");
   }
+});
+
+router.get("/search", async (req, res) => {
+    try {
+        const keyword = req.query.keyword; // Lấy từ khóa từ URL (?keyword=...)
+        
+        if (!keyword) {
+            return res.redirect("/");
+        }
+
+        // Tìm kiếm bài viết có tiêu đề hoặc nội dung chứa từ khóa
+        // %keyword% nghĩa là từ khóa có thể nằm ở bất kỳ đâu trong chuỗi
+        const sql = `
+            SELECT * FROM posts 
+            WHERE (title LIKE ? OR content LIKE ?) 
+            AND status = 'Hiển thị' 
+            ORDER BY created_at DESC
+        `;
+        
+        const [posts] = await pool.execute(sql, [`%${keyword}%`, `%${keyword}%`]);
+
+        res.render("layout", {
+            content: "search",
+            posts: posts,
+            keyword: keyword
+        });
+    } catch (err) {
+        console.error("LỖI TÌM KIẾM:", err);
+        res.status(500).send("Có lỗi xảy ra khi tìm kiếm.");
+    }
 });
 
 module.exports = router;
