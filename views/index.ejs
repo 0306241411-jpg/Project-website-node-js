@@ -1,4 +1,4 @@
-<div class="container mt-5"> <div class="row mb-4">
+<div class="container mt-5 pb-5"> <div class="row mb-4">
         <div class="col-12">
             <h2 class="fw-bold border-bottom pb-2 border-danger border-3" style="display: inline-block;">
                 BÀI VIẾT MỚI NHẤT
@@ -8,32 +8,47 @@
 
     <div class="row justify-content-center g-4"> 
     <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
-        
         <% posts.forEach(post => { %>
             <div class="col-md-4 mb-4"> 
-                <div class="card h-100 shadow-sm border-0 bg-light"> <img src="/img/<%= post.image %>" class="card-img-top" alt="<%= post.title %>" style="height: 250px; object-fit: cover;">
-                    
-                    <div class="card-body d-flex flex-column p-4"> <h5 class="card-title fw-bold text-dark"><%= post.title %></h5>
-                        
+                <div class="card h-100 shadow-sm border-0 bg-light">
+                    <img src="/img/<%= post.image %>" class="card-img-top" alt="<%= post.title %>" style="height: 250px; object-fit: cover;">
+                    <div class="card-body d-flex flex-column p-4">
+                        <h5 class="card-title fw-bold text-dark"><%= post.title %></h5>
                         <p class="card-text text-muted small mb-2">
                             <i class="bi bi-clock"></i> 
                             <%= post.created_at ? new Date(post.created_at).toLocaleDateString('vi-VN') : 'Vừa mới đây' %>
                         </p>
-                        
                         <div class="card-text text-muted mb-3" style="display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
                             <%- post.content %>
                         </div>
-                        
                         <a href="single/<%= post.id %>" class="btn btn-outline-danger mt-auto">Đọc tiếp &rarr;</a>
                     </div>
                 </div>
             </div>
         <% }) %>
-
     <% } else { %>
         <div class="col-12 text-center mt-5">
             <h4 class="text-muted">Hiện tại chưa có bài viết nào!</h4>
-            <p>Hãy thêm bài viết mới vào database để hiển thị.</p>
         </div>
     <% } %>
+    </div> <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+        <nav aria-label="Page navigation" class="mt-5">
+            <ul class="pagination justify-content-center">
+                <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                    <a class="page-link text-danger border-danger" href="/?page=<%= currentPage - 1 %>">&laquo; Trước</a>
+                </li>
+
+                <% for(let i = 1; i <= totalPages; i++) { %>
+                    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                        <a class="page-link <%= currentPage === i ? 'bg-danger border-danger text-white' : 'text-danger border-danger' %>" href="/?page=<%= i %>"><%= i %></a>
+                    </li>
+                <% } %>
+
+                <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                    <a class="page-link text-danger border-danger" href="/?page=<%= currentPage + 1 %>">Sau &raquo;</a>
+                </li>
+            </ul>
+        </nav>
+    <% } %>
+
 </div>
